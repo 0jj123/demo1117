@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block public %}
+<style>
+	.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+	.login { width: 100%; max-width: 400px; }
+	.login h1 { margin: 0 0 4px; font-size: 22px; }
+	.login .sub { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+	.login .btn { width: 100%; padding: 11px; font-size: 15px; }
+	.login { padding: 36px 32px; }
+	.demo { margin-top: 24px; font-size: 14px; width: 100%; border-collapse: collapse; }
+	.demo td, .demo th { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; }
+	.demo th { color: var(--muted); font-weight: 500; font-size: 13px; }
+	.demo tr:last-child td { border-bottom: none; }
+	.demo tr { cursor: pointer; }
+	.demo tbody tr:hover { background: #f9fafb; }
+</style>
+<div class="login-wrap">
+	<div class="card login">
+		<h1>📝 投稿審查系統</h1>
+		<p class="sub">請登入以繼續</p>
+		{% if error %}<div class="error">{{ error }}</div>{% endif %}
+		<form method="post" action="/login">
+			<div class="form-row">
+				<label>帳號</label>
+				<input type="text" name="username" id="username" value="{{ username or '' }}" required>
+			</div>
+			<div class="form-row">
+				<label>密碼</label>
+				<input type="password" name="password" id="password" required>
+			</div>
+			<button type="submit" class="btn">登入</button>
+		</form>
+
+		<table class="demo">
+			<thead><tr><th>Demo 帳號</th><th>帳號</th><th>密碼</th></tr></thead>
+			<tbody>
+			{% for name, u in users.items() %}
+			<tr onclick="document.getElementById('username').value='{{ name }}';document.getElementById('password').value='{{ u.password }}';">
+				<td><span class="tag">{{ u.label }}</span></td><td>{{ name }}</td><td>{{ u.password }}</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		<p class="sub" style="margin:8px 0 0;font-size:12px;">點一下帳號列可自動帶入</p>
+	</div>
+</div>
+{% endblock %}

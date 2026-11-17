@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+	<p style="margin: 0 0 16px;"><a href="/author/papers">← 返回我的投稿</a></p>
+	<div class="card" style="max-width: 780px; padding: 32px;">
+		<div class="head">
+			<h1>{% if paper.id %}編輯投稿{% else %}新增投稿{% endif %}</h1>
+			<span class="badge s-編輯中">編輯中</span>
+		</div>
+		{% if error %}<div class="error">{{ error }}</div>{% endif %}
+		<form method="post" action="{% if paper.id %}/author/paper/update{% else %}/author/paper/insert{% endif %}">
+			{% if paper.id %}<input type="hidden" name="id" value="{{ paper.id }}">{% endif %}
+			<div class="form-row">
+				<label>類別</label>
+				<select name="category" required>
+					<option value="">-- 請選擇 --</option>
+					{% for c in categories %}
+					<option value="{{ c }}" {% if paper.category == c %}selected{% endif %}>{{ c }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="form-row">
+				<label>標題</label>
+				<input type="text" name="title" value="{{ paper.title or '' }}" placeholder="輸入文章標題" required>
+			</div>
+			<div class="form-row">
+				<label>文章內容</label>
+				<textarea name="content" rows="14" placeholder="輸入文章內容" required>{{ paper.content or '' }}</textarea>
+			</div>
+			<div class="actions">
+				<button type="submit" class="btn">儲存</button>
+				<a href="/author/papers" class="btn btn-ghost">取消</a>
+			</div>
+		</form>
+	</div>
+{% endblock %}

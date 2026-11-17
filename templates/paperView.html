@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+	<p style="margin: 0 0 16px;"><a href="/editor/papers">← 返回待審查清單</a></p>
+	<div class="card" style="max-width: 780px; padding: 32px;">
+		<div class="top" style="margin-bottom: 14px;">
+			<span class="tag">{{ paper.category }}</span>
+			<span class="badge s-{{ paper.status }}">{{ paper.status }}</span>
+		</div>
+		<h1 style="margin: 0 0 12px; font-size: 26px;">{{ paper.title }}</h1>
+		<div class="who"><span class="avatar">{{ paper.author[0] }}</span>{{ paper.author }}</div>
+		<div style="white-space: pre-wrap; line-height: 1.9; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--line);">{{ paper.content }}</div>
+		<div class="actions" style="margin-top: 32px;">
+			<a class="btn btn-success" href="/editor/paper/approve/{{ paper.id }}" onclick="return confirm('確定通過「{{ paper.title }}」？')">✓ 通過</a>
+			<a class="btn btn-danger" href="/editor/paper/reject/{{ paper.id }}" onclick="return confirm('確定退回「{{ paper.title }}」給作者？')">↩ 退回修改</a>
+		</div>
+	</div>
+{% endblock %}

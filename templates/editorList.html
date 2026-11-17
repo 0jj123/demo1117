@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="head">
+		<h1>待審查清單</h1>
+		<span class="badge s-審查中">共 {{ papers|length }} 篇待審</span>
+	</div>
+
+	<div class="grid">
+	{% for p in papers %}
+		<div class="card paper">
+			<div class="top">
+				<span class="tag">{{ p.category }}</span>
+				<span class="badge s-{{ p.status }}">{{ p.status }}</span>
+			</div>
+			<h3>{{ p.title }}</h3>
+			<p class="preview">{{ p.content }}</p>
+			<div class="bottom">
+				<span class="who"><span class="avatar">{{ p.author[0] }}</span>{{ p.author }}</span>
+				<a class="btn btn-sm" href="/editor/paper/{{ p.id }}">查看並審查 →</a>
+			</div>
+		</div>
+	{% else %}
+		<div class="empty"><div class="big">🎉</div>目前沒有待審查的稿件</div>
+	{% endfor %}
+	</div>
+{% endblock %}

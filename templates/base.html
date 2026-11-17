@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>投稿審查系統</title>
+    <style>
+      :root {
+        --bg: #f3f5f8; --card: #ffffff; --text: #1e293b; --muted: #64748b; --line: #e8ecf1;
+        --primary: #0d9488; --primary-dark: #0f766e; --primary-soft: #ccfbf1;
+        --radius: 16px; --shadow: 0 2px 8px rgba(15, 23, 42, .06);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+             background: var(--bg); color: var(--text); }
+      a { color: var(--primary); text-decoration: none; }
+
+      /* 上方導覽列 */
+      .topbar { background: var(--card); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; }
+      .topbar-in { max-width: 1080px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+      .brand { font-size: 18px; font-weight: 700; color: var(--text); }
+      .brand span { color: var(--primary); }
+      .nav { display: flex; gap: 4px; }
+      .nav a { color: var(--muted); padding: 7px 14px; border-radius: 999px; font-size: 15px; }
+      .nav a:hover { background: var(--bg); color: var(--text); }
+      .nav a.active { background: var(--primary-soft); color: var(--primary-dark); font-weight: 600; }
+      .me { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+      .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff;
+                display: inline-flex; align-items: center; justify-content: center; font-weight: 700; text-transform: uppercase; }
+      .me small { color: var(--muted); }
+
+      .container { max-width: 1080px; margin: 0 auto; padding: 32px 24px 48px; }
+
+      /* 標題列 */
+      .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+      .head h1 { margin: 0; font-size: 26px; }
+
+      /* 篩選膠囊 */
+      .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+      .chip { border: 1px solid var(--line); background: var(--card); color: var(--muted); padding: 7px 14px;
+              border-radius: 999px; font-size: 14px; cursor: pointer; font-family: inherit; }
+      .chip b { margin-left: 4px; color: var(--text); }
+      .chip.on { background: var(--text); border-color: var(--text); color: #fff; }
+      .chip.on b { color: #fff; }
+
+      /* 稿件卡片 */
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+      .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; }
+      .paper { display: flex; flex-direction: column; gap: 12px; transition: transform .15s, box-shadow .15s; }
+      .paper:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15, 23, 42, .10); }
+      .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+      .paper h3 { margin: 0; font-size: 18px; line-height: 1.4; }
+      .paper .preview { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6;
+                        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .paper .bottom { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line);
+                       display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .who { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+      .who .avatar { width: 26px; height: 26px; font-size: 12px; background: #94a3b8; }
+      .empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 56px 24px; }
+      .empty .big { font-size: 40px; }
+
+      /* 標籤 */
+      .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+      .s-編輯中 { color: #b45309; background: #fef3c7; }
+      .s-審查中 { color: #1d4ed8; background: #dbeafe; }
+      .s-已通過 { color: #047857; background: #d1fae5; }
+      .tag { background: var(--bg); color: var(--muted); padding: 4px 10px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+
+      /* 按鈕 */
+      .btn { display: inline-block; padding: 9px 18px; border-radius: 999px; border: none; font-size: 14px; font-weight: 600;
+             cursor: pointer; background: var(--primary); color: #fff; white-space: nowrap; font-family: inherit; }
+      .btn:hover { background: var(--primary-dark); }
+      .btn-sm { padding: 6px 14px; font-size: 13px; }
+      .btn-ghost { background: var(--bg); color: var(--text); }
+      .btn-ghost:hover { background: var(--line); }
+      .btn-danger { background: #fee2e2; color: #b91c1c; }
+      .btn-danger:hover { background: #fecaca; }
+      .btn-success { background: #10b981; }
+      .btn-success:hover { background: #059669; }
+      .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+      /* 表單 */
+      .form-row { margin-bottom: 18px; }
+      .form-row label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+      input[type=text], input[type=password], select, textarea {
+        width: 100%; padding: 11px 14px; border: 1px solid #dbe1e8; border-radius: 12px; font-size: 15px;
+        font-family: inherit; background: #fbfcfd; }
+      input:focus, select:focus, textarea:focus { outline: 3px solid var(--primary-soft); border-color: var(--primary); background: #fff; }
+      .error { background: #fee2e2; color: #b91c1c; padding: 10px 14px; border-radius: 12px; margin-bottom: 16px; }
+
+      @media (max-width: 640px) {
+        .topbar-in { padding: 12px 16px; gap: 10px; }
+        .nav { order: 3; width: 100%; }
+        .container { padding: 20px 16px 40px; }
+      }
+    </style>
+  </head>
+<body>
+{% if user %}
+	{% set path = request.url.path %}
+	<header class="topbar">
+		<div class="topbar-in">
+			<div class="brand">📝 投稿<span>審查</span></div>
+			<nav class="nav">
+			{% if user.role == 'author' %}
+				<a href="/author/papers" class="{{ 'active' if path == '/author/papers' }}">我的投稿</a>
+				<a href="/author/paper/add" class="{{ 'active' if path == '/author/paper/add' or path == '/author/paper/insert' }}">新增投稿</a>
+			{% else %}
+				<a href="/editor/papers" class="{{ 'active' if path.startswith('/editor/') }}">待審查清單</a>
+			{% endif %}
+			</nav>
+			<div class="me">
+				<span class="avatar">{{ user.username[0] }}</span>
+				<span>{{ user.username }} <small>· {{ user.label }}</small></span>
+				<a href="/logout" class="btn btn-sm btn-ghost">登出</a>
+			</div>
+		</div>
+	</header>
+	<main class="container">
+		{% block content %}{% endblock %}
+	</main>
+{% else %}
+	{% block public %}{% endblock %}
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="head">
+		<h1>我的投稿</h1>
+		<a href="/author/paper/add" class="btn">＋ 新增投稿</a>
+	</div>
+
+	<div class="filters">
+		<button class="chip on" data-filter="">全部<b>{{ papers|length }}</b></button>
+		{% for s in ['編輯中', '審查中', '已通過'] %}
+		<button class="chip" data-filter="{{ s }}">{{ s }}<b>{{ papers|selectattr('status', 'equalto', s)|list|length }}</b></button>
+		{% endfor %}
+	</div>
+
+	<div class="grid">
+	{% for p in papers %}
+		<div class="card paper" data-status="{{ p.status }}">
+			<div class="top">
+				<span class="tag">{{ p.category }}</span>
+				<span class="badge s-{{ p.status }}">{{ p.status }}</span>
+			</div>
+			<h3>{{ p.title }}</h3>
+			<p class="preview">{{ p.content }}</p>
+			<div class="bottom">
+			{% if p.status == '編輯中' %}
+				<div class="actions">
+					<a class="btn btn-sm btn-ghost" href="/author/paper/edit/{{ p.id }}">編輯</a>
+					<a class="btn btn-sm btn-danger" href="/author/paper/delete/{{ p.id }}" onclick="return confirm('確定要刪除「{{ p.title }}」？')">刪除</a>
+				</div>
+				<a class="btn btn-sm" href="/author/paper/submit/{{ p.id }}" onclick="return confirm('送出後無法修改，確定送出「{{ p.title }}」？')">送出 →</a>
+			{% elif p.status == '審查中' %}
+				<span class="who">⏳ 等待編輯審查</span>
+			{% else %}
+				<span class="who">🎉 已通過審查</span>
+			{% endif %}
+			</div>
+		</div>
+	{% else %}
+		<div class="empty"><div class="big">📭</div>目前沒有稿件，點右上角新增第一篇吧</div>
+	{% endfor %}
+	</div>
+
+	<script>
+	// 依狀態篩選卡片（純前端）
+	document.querySelectorAll('.chip').forEach(chip => {
+		chip.addEventListener('click', () => {
+			document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+			chip.classList.add('on');
+			const f = chip.dataset.filter;
+			document.querySelectorAll('.paper').forEach(card => {
+				card.style.display = (!f || card.dataset.status === f) ? '' : 'none';
+			});
+		});
+	});
+	</script>
+{% endblock %}
